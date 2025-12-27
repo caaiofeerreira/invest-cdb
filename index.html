@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>InvestCDB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>InvestCDB</h1>
+    <p>Veja como juros compostos fazem seu dinheiro crescer.</p>
+
+    <label>Valor investido por mês (R$)</label>
+    <input type="number" id="aporte" placeholder="Ex: 500">
+
+    <label>Rendimento mensal (%)</label>
+    <input type="number" id="taxa" placeholder="Ex: 1">
+    
+    <label>Tempo de investimento (anos)</label>
+    <input type="number" id="anos" placeholder="Ex: 10">
+
+    <button id="calcular">Calcular</button>
+
+    <span id="avisoIr" class="aviso-ir" style="display:none">
+    </span>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
