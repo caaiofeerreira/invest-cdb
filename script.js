@@ -48,30 +48,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderResultado(anos, dados) {
-    return `
-      <div class="resultado">
-        <h3>${anos} ano(s)</h3>
-        <p>Total investido: <strong>${formatarMoeda(dados.totalInvestido)}</strong></p>
-        <p>Saldo final bruto: <strong>${formatarMoeda(dados.saldoBruto)}</strong></p>
+  return `
+    <div class="resultado">
+      <h3>${anos} ano(s)</h3>
+
+      <ul class="lista-resultado">
+        <li>
+          <span>Total investido:</span>
+          <strong>${formatarMoeda(dados.totalInvestido)}</strong>
+        </li>
+
+        <li>
+          <span>Saldo final bruto:</span>
+          <strong>${formatarMoeda(dados.saldoBruto)}</strong>
+        </li>
 
         <hr>
 
-        <p>Lucro bruto no período: <strong>${formatarMoeda(dados.lucroBruto)}</strong></p>
-        <p>Lucro mensal médio: <strong>${formatarMoeda(dados.lucroMensal)}</strong></p>
+        <li>
+          <span>Lucro bruto no período:</span>
+          <strong>${formatarMoeda(dados.lucroBruto)}</strong>
+        </li>
+
+        <li>
+          <span>Lucro mensal médio:</span>
+          <strong>${formatarMoeda(dados.lucroMensal)}</strong>
+        </li>
 
         <hr>
 
-        <p class="ir-valor">
-          IR (${(dados.aliquota * 100).toFixed(1)}%): <strong>${formatarMoeda(dados.valorIR)}</strong>
-        </p>
+        <li class="ir-valor">
+          <span>IR (${(dados.aliquota * 100).toFixed(1)}%):</span>
+          <strong>${formatarMoeda(dados.valorIR)}</strong>
+        </li>
 
-        <p class="lucro-valor">
-          Lucro líquido: <strong>${formatarMoeda(dados.lucroLiquido)}</strong>
-        </p>
+        <li class="lucro-valor">
+          <span>Lucro líquido:</span>
+          <strong>${formatarMoeda(dados.lucroLiquido)}</strong>
+        </li>
 
-        <p>Valor final líquido: <strong>${formatarMoeda(dados.saldoLiquido)}</strong></p>
-      </div>
-    `;
+        <li class="liquido-final">
+          <span>Valor final líquido:</span>
+          <strong>${formatarMoeda(dados.saldoLiquido)}</strong>
+        </li>
+      </ul>
+    </div>
+  `;
   }
 
   function criarGrafico(labels, dados) {
@@ -109,12 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const aporte = Number(inputAporte.value);
     const taxaMensal = Number(inputTaxa.value) / 100;
     const anosTotais = Number(inputAnos.value);
+    const graficoCanvas = document.getElementById("graficoPatrimonio");
+    graficoCanvas.style.display = "block";
 
     resultado.innerHTML = "";
 
     if (aporte <= 0 || taxaMensal <= 0 || anosTotais <= 0) {
-      resultado.innerHTML = "<strong>Preencha os valores corretamente.</strong>";
+      resultado.innerHTML = "<p><strong>Preencha os valores corretamente.</strong></p>";
       avisoIr.style.display = "none";
+      graficoCanvas.style.display= "none"
       return;
     }
 
@@ -139,9 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       resultado.innerHTML += renderResultado(anoAtual, dados);
     }
-
-    const graficoCanvas = document.getElementById("graficoPatrimonio");
-    graficoCanvas.style.display = "block";
 
     criarGrafico(labels, dadosGrafico);
   });

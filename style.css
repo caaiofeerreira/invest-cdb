@@ -17,15 +17,57 @@ body {
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
+  max-width: 500px;
   margin: auto;
 }
 
 h1 {
   font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 300;
   align-self: center;
-  font-size: 2rem;
-  margin-bottom: 5px;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  z-index: 1;
+}
+
+.container h1 {
+  position: relative;
+  display: inline-block;
+}
+
+.container h1::before {
+  content: '';
+  position: absolute;
+  width: 55px;
+  height: 60px;
+  background-color: #ffee00;
+  border-radius: 5px;
+  z-index: -1;
+
+  left: -22px;
+  top: 26%;
+  transform: translateY(-50%);
+}
+
+.container h1 span {
+  position: relative;
+  display: inline-block;
+  color: white;
+  font-weight: bold;
+  padding: 0 6px;
+}
+
+.container h1 span::before {
+  content: '';
+  position: absolute;
+  width: 102%;
+  height: 75%;
+  background-color: #0a6e34;
+  border-radius: 5px;
+  z-index: -1;
+
+  top: 10%;
+  left: 0%;
 }
 
 h3 {
@@ -55,7 +97,7 @@ input {
 }
 
 button {
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 10px;
   background-color: #0f69df;
   color: white;
@@ -81,11 +123,43 @@ button:hover {
   border-radius: 4px;
 }
 
+.container-resultado {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
 .resultado {
-  margin-top: 20px;
-  padding: 5px;
-  background: #fcfcfcff;
+  background: #ffffff;
   border-radius: 5px;
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resultado:hover {
+  transform: translateY(-10px);
+  box-shadow: 1px 10px 20px 10px rgba(0, 0, 0, 0.213);
+}
+
+.lista-resultado {
+  list-style: none;
+  padding: 0;
+}
+
+.lista-resultado li {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.lista-resultado hr {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
 }
 
 .lucro-valor {
@@ -96,8 +170,30 @@ button:hover {
   color: red;
 }
 
+.liquido-final {
+  color: #bd8c12;
+}
+
 .graficoPatrimonio {
-  max-width: 700px;
+  max-width: 400px;
   margin: 20px auto;
   display: none;
+}
+
+@media (max-width: 480px) {
+  .resultado {
+    padding: 12px;
+  }
+
+  .resultado h3 {
+    font-size: 1rem;
+  }
+
+  .lista-resultado li {
+    font-size: 0.85rem;
+  }
+
+  .lista-resultado li strong {
+    font-size: 0.9rem;
+  }
 }
