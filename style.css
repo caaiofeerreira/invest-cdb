@@ -175,9 +175,10 @@ button:hover {
 }
 
 .graficoPatrimonio {
-  max-width: 400px;
-  margin: 20px auto;
   display: none;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
 }
 
 @media (max-width: 480px) {

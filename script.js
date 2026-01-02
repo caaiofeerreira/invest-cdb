@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
       totalInvestido,
       saldoBruto: saldo,
       lucroBruto,
-      lucroMensal: lucroBruto / 12,
       aliquota,
       valorIR,
       lucroLiquido: lucroBruto - valorIR,
@@ -68,11 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <li>
           <span>Lucro bruto no período:</span>
           <strong>${formatarMoeda(dados.lucroBruto)}</strong>
-        </li>
-
-        <li>
-          <span>Lucro mensal médio:</span>
-          <strong>${formatarMoeda(dados.lucroMensal)}</strong>
         </li>
 
         <hr>
@@ -110,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         datasets: [{
           label: "Evolução do patrimônio (líquido)",
           data: dados,
-          borderColor: "#ffffffff",
           backgroundColor: "#0b774aff",
         }]
       },
