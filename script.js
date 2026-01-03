@@ -1,163 +1,198 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const calcular = document.getElementById("calcular");
-  const inputAporte = document.getElementById("aporte");
-  const inputTaxa = document.getElementById("taxa");
-  const inputAnos = document.getElementById("anos");
-  const resultado = document.getElementById("resultado");
-  const avisoIr = document.getElementById("avisoIr");
+
+  const elements = {
+    calcular: document.getElementById("calcular"),
+    inputInicial: document.getElementById("aporteInicial"),
+    inputMensal: document.getElementById("aporteMensal"),
+    inputTaxa: document.getElementById("taxa"),
+    tipoTaxa: document.getElementById("tipoTaxa"),
+    inputAnos: document.getElementById("anos"),
+    resultado: document.getElementById("resultado"),
+    avisoIr: document.getElementById("avisoIr")
+  };
 
   let grafico = null;
 
-  function formatarMoeda(valor) {
-    return valor.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
+  const formatarMoeda = (valor) => 
+    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  function mascaraFinanceira(valor) {
+    const limpo = valor.replace(/\D/g, "");
+    if (!limpo) return "";
+    return (Number(limpo) / 100).toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
   }
 
-  function aliquotaIR(meses) {
-    if (meses <= 6) return 0.225;
-    if (meses <= 12) return 0.20;
-    if (meses <= 24) return 0.175;
-    return 0.15;
+  function converterParaNumero(stringBR) {
+    if (!stringBR) return 0;
+    return Number(stringBR.replace(/\./g, "").replace(",", "."));
   }
 
-  function calcularResultado(aporte, taxaMensal, meses) {
-    let saldo = 0;
+  const calculos = {
+    aliquotaIR(meses) {
+      if (meses <= 6) return 0.225;
+      if (meses <= 12) return 0.20;
+      if (meses <= 24) return 0.175;
+      return 0.15;
+    },
 
-    for (let i = 0; i < meses; i++) {
-      saldo += aporte;
-      saldo *= (1 + taxaMensal);
+    investimento(aporteInicial, aporteMensal, taxaMensal, meses) {
+      let saldo = aporteInicial;
+      let totalInvestido = aporteInicial;
+
+      for (let i = 0; i < meses; i++) {
+        saldo += aporteMensal;
+        totalInvestido += aporteMensal;
+        saldo *= (1 + taxaMensal);
+      }
+      return { saldo, totalInvestido };
+    },
+
+    converterTaxaMensal(taxaDigitada, tipo) {
+      const taxaDecimal = taxaDigitada / 100;
+      return tipo === "anual" 
+        ? Math.pow(1 + taxaDecimal, 1 / 12) - 1 
+        : taxaDecimal;
     }
+  };
 
-    const totalInvestido = aporte * meses;
-    const lucroBruto = saldo - totalInvestido;
-    const aliquota = aliquotaIR(meses);
-    const valorIR = lucroBruto * aliquota;
+  function renderizarCard(ano, d) {
+    // Cálculo da proporção visual
+    const percentualLucro = (d.lucroLiquido / d.saldoLiquido) * 100;
+    const percentualInvestido = 100 - percentualLucro;
 
-    return {
-      totalInvestido,
-      saldoBruto: saldo,
-      lucroBruto,
-      aliquota,
-      valorIR,
-      lucroLiquido: lucroBruto - valorIR,
-      saldoLiquido: saldo - valorIR
-    };
+    return `
+      <div class="resultado">
+        <h3>${ano} ano(s)</h3>
+        
+        <div class="barra-container">
+          <div class="barra-progresso">
+            <div class="parte-investida" style="width: ${percentualInvestido}%"></div>
+            <div class="parte-lucro" style="width: ${percentualLucro}%"></div>
+          </div>
+          <div class="legenda-barra">
+            <span><small>●</small> Investido</span>
+            <span><small>●</small> Lucro</span>
+          </div>
+        </div>
+
+        <ul class="lista-resultado">
+          <li>
+            <span>Total investido:</span>
+            <strong>${formatarMoeda(d.totalInvestido)}</strong>
+          </li>
+          <li>
+            <span>Saldo bruto:</span>
+            <strong>${formatarMoeda(d.saldoBruto)}</strong>
+          </li>
+          <hr>
+          <li>
+            <span>Lucro bruto:</span>
+            <strong>${formatarMoeda(d.lucroBruto)}</strong>
+          </li>
+          <hr>
+          <li class="ir-valor">
+            <span>IR (${(d.aliquota * 100).toFixed(1)}%):</span>
+            <strong>${formatarMoeda(d.valorIR)}</strong>
+          </li>
+          <li class="lucro-valor">
+            <span>Lucro líquido:</span>
+            <strong>${formatarMoeda(d.lucroLiquido)}</strong>
+          </li>
+          <li class="liquido-final">
+            <span>Valor final líquido:</span>
+            <strong>${formatarMoeda(d.saldoLiquido)}</strong>
+          </li>
+        </ul>
+
+        <div class="dica-performance">
+          O lucro representa <strong>${percentualLucro.toFixed(1)}%</strong> do valor total.
+        </div>
+      </div>
+    `;
   }
 
-  function renderResultado(anos, dados) {
-  return `
-    <div class="resultado">
-      <h3>${anos} ano(s)</h3>
-
-      <ul class="lista-resultado">
-        <li>
-          <span>Total investido:</span>
-          <strong>${formatarMoeda(dados.totalInvestido)}</strong>
-        </li>
-
-        <li>
-          <span>Saldo final bruto:</span>
-          <strong>${formatarMoeda(dados.saldoBruto)}</strong>
-        </li>
-
-        <hr>
-
-        <li>
-          <span>Lucro bruto no período:</span>
-          <strong>${formatarMoeda(dados.lucroBruto)}</strong>
-        </li>
-
-        <hr>
-
-        <li class="ir-valor">
-          <span>IR (${(dados.aliquota * 100).toFixed(1)}%):</span>
-          <strong>${formatarMoeda(dados.valorIR)}</strong>
-        </li>
-
-        <li class="lucro-valor">
-          <span>Lucro líquido:</span>
-          <strong>${formatarMoeda(dados.lucroLiquido)}</strong>
-        </li>
-
-        <li class="liquido-final">
-          <span>Valor final líquido:</span>
-          <strong>${formatarMoeda(dados.saldoLiquido)}</strong>
-        </li>
-      </ul>
-    </div>
-  `;
-  }
-
-  function criarGrafico(labels, dados) {
+  function atualizarGrafico(labels, dados) {
     const ctx = document.getElementById("graficoPatrimonio").getContext("2d");
-
-    if (grafico) {
-      grafico.destroy();
-    }
+    if (grafico) grafico.destroy();
 
     grafico = new Chart(ctx, {
       type: "bar",
       data: {
         labels,
         datasets: [{
-          label: "Evolução do patrimônio (líquido)",
+          label: "Patrimônio Líquido",
           data: dados,
-          backgroundColor: "#0b774aff",
+          backgroundColor: "#0b774aff"
         }]
       },
       options: {
         responsive: true,
-        scales: {
-          y: {
-            ticks: {
-              callback: value => formatarMoeda(value)
-            }
-          }
-        }
+        scales: { y: { ticks: { callback: v => formatarMoeda(v) } } }
       }
     });
   }
 
-  calcular.addEventListener('click', () => {
-    const aporte = Number(inputAporte.value);
-    const taxaMensal = Number(inputTaxa.value) / 100;
-    const anosTotais = Number(inputAnos.value);
-    const graficoCanvas = document.getElementById("graficoPatrimonio");
-    graficoCanvas.style.display = "block";
+  [elements.inputInicial, elements.inputMensal, elements.inputTaxa].forEach(input => {
+    input.addEventListener("input", (e) => {
+      e.target.value = mascaraFinanceira(e.target.value);
+    });
+  });
 
-    resultado.innerHTML = "";
+  elements.calcular.addEventListener("click", () => {
+    const aporteInicial = converterParaNumero(elements.inputInicial.value);
+    const aporteMensal = converterParaNumero(elements.inputMensal.value);
+    const taxaDigitada = converterParaNumero(elements.inputTaxa.value);
+    const anosTotais = Number(elements.inputAnos.value);
 
-    if (aporte <= 0 || taxaMensal <= 0 || anosTotais <= 0) {
-      resultado.innerHTML = "<p><strong>Preencha os valores corretamente.</strong></p>";
-      avisoIr.style.display = "none";
-      graficoCanvas.style.display= "none"
+    if ((aporteInicial <= 0 && aporteMensal <= 0) || taxaDigitada <= 0 || anosTotais <= 0) {
+      elements.resultado.innerHTML = "<p>Preencha os valores corretamente.</p>";
       return;
     }
 
-    avisoIr.style.display="block";
-    avisoIr.innerHTML= `
+    const taxaMensal = calculos.converterTaxaMensal(taxaDigitada, elements.tipoTaxa.value);
+
+    avisoIr.style.display = "block";
+    avisoIr.innerHTML = `
       ⚠️ Os valores simulados incluem IR de acordo com o prazo:<br>
       - Até 180 dias: 22,5%<br>
       - 181 a 360 dias: 20%<br>
       - 361 a 720 dias: 17,5%<br>
       - Acima de 720 dias: 15%
     `;
+    
+    elements.resultado.innerHTML = "";
+    elements.avisoIr.style.display = "block";
 
     const labels = [];
     const dadosGrafico = [];
 
-    for (let anoAtual = 1; anoAtual <= anosTotais; anoAtual++) {
-      const meses = anoAtual * 12;
-      const dados = calcularResultado(aporte, taxaMensal, meses);
+    for (let ano = 1; ano <= anosTotais; ano++) {
+      const meses = ano * 12;
+      const res = calculos.investimento(aporteInicial, aporteMensal, taxaMensal, meses);
+      
+      const lucroBruto = res.saldo - res.totalInvestido;
+      const aliquota = calculos.aliquotaIR(meses);
+      const valorIR = lucroBruto * aliquota;
 
-      labels.push(`${anoAtual} ano(s)`);
-      dadosGrafico.push(dados.saldoLiquido);
+      const dadosView = {
+        ...res,
+        saldoBruto: res.saldo,
+        lucroBruto,
+        aliquota,
+        valorIR,
+        lucroLiquido: lucroBruto - valorIR,
+        saldoLiquido: res.saldo - valorIR
+      };
 
-      resultado.innerHTML += renderResultado(anoAtual, dados);
+      labels.push(`${ano} ano(s)`);
+      dadosGrafico.push(dadosView.saldoLiquido);
+      elements.resultado.innerHTML += renderizarCard(ano, dadosView);
     }
 
-    criarGrafico(labels, dadosGrafico);
+    atualizarGrafico(labels, dadosGrafico);
+    elements.resultado.scrollIntoView({ behavior: 'smooth' });
   });
 });

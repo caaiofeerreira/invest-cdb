@@ -12,19 +12,27 @@
     <h1><strong>In</strong>vest<span>CDB</span></h1>
     <p>Veja como juros compostos fazem seu dinheiro crescer.</p>
 
-    <label>Valor investido por mês (R$)</label>
-    <input type="number" id="aporte" placeholder="Ex: 500">
+    <label>Aporte inicial (R$)</label>
+    <input type="text" id="aporteInicial" placeholder="Ex: 10.000,00">
 
-    <label>Rendimento mensal (%)</label>
-    <input type="number" id="taxa" placeholder="Ex: 1">
-    
+    <label>Aporte mensal (R$)</label>
+    <input type="text" id="aporteMensal" placeholder="Ex: 500,00">
+
+    <label>Rendimento</label>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="taxa" placeholder="Ex: 12 ou 1,5">
+      <select id="tipoTaxa">
+        <option value="anual">Anual (%)</option>
+        <option value="mensal">Mensal (%)</option>
+      </select>
+    </div>
+
     <label>Tempo de investimento (anos)</label>
     <input type="number" id="anos" placeholder="Ex: 10">
 
     <button id="calcular">Calcular</button>
 
-    <span id="avisoIr" class="aviso-ir">
-    </span>
+    <span id="avisoIr" class="aviso-ir"></span>
   </div>
 
   <div class="container-resultado">

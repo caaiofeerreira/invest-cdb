@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
 
 body {
   font-family: 'Montserrat', Arial, sans-serif;
@@ -21,6 +19,7 @@ body {
   margin: auto;
 }
 
+/* --- Títulos Estilizados --- */
 h1 {
   font-family: 'Poppins', Arial, sans-serif;
   font-weight: 300;
@@ -43,7 +42,6 @@ h1 {
   background-color: #ffee00;
   border-radius: 5px;
   z-index: -1;
-
   left: -22px;
   top: 26%;
   transform: translateY(-50%);
@@ -65,7 +63,6 @@ h1 {
   background-color: #0a6e34;
   border-radius: 5px;
   z-index: -1;
-
   top: 10%;
   left: 0%;
 }
@@ -83,6 +80,7 @@ p {
   margin-bottom: 20px;
 }
 
+/* --- Inputs e Botões --- */
 label {
   display: block;
   font-size: .9rem;
@@ -112,6 +110,7 @@ button:hover {
   background-color: #1153aa;
 }
 
+/* --- Avisos e Gráficos --- */
 .aviso-ir {
   display: none;
   margin: 10px 0;
@@ -123,6 +122,7 @@ button:hover {
   border-radius: 4px;
 }
 
+/* --- Container de Resultados (Cards) --- */
 .container-resultado {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -145,6 +145,48 @@ button:hover {
   box-shadow: 1px 10px 20px 10px rgba(0, 0, 0, 0.213);
 }
 
+/* --- Barra de Proporção Visual --- */
+.barra-container {
+  padding: 0 10px;
+  margin-bottom: 15px;
+}
+
+.barra-progresso {
+  display: flex;
+  height: 8px;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.parte-investida {
+  background-color: #ccc;
+}
+
+.parte-lucro {
+  background-color: #0a6e34;
+}
+
+.legenda-barra {
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.legenda-barra span small {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.legenda-barra span:nth-child(2) {
+  color: #0a6e34;
+  font-weight: 600;
+}
+
+/* --- Lista de Dados dentro do Card --- */
 .lista-resultado {
   list-style: none;
   padding: 0;
@@ -162,30 +204,33 @@ button:hover {
   border-top: 1px solid #ddd;
 }
 
-.lucro-valor {
-  color: green;
-}
+.lucro-valor { color: #0a6e34; }
+.ir-valor { color: #d32f2f; }
+.liquido-final { color: #bd8c12; font-weight: bold; }
 
-.ir-valor {
-  color: red;
-}
-
-.liquido-final {
-  color: #bd8c12;
+/* --- Dica Informativa --- */
+.dica-performance {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px dashed #ddd;
+  font-size: 0.75rem;
+  color: #555;
+  text-align: center;
 }
 
 .graficoPatrimonio {
   display: none;
-  width: 100%;
+  width: 100% !important;
   max-width: 600px;
-  margin: 20px auto;
+  margin: 30px auto;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
+/* --- Responsividade --- */
 @media (max-width: 480px) {
-  .resultado {
-    padding: 12px;
-  }
-
   .resultado h3 {
     font-size: 1rem;
   }
