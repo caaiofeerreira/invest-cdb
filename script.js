@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function renderizarCard(ano, d) {
-    // Cálculo da proporção visual
     const percentualLucro = (d.lucroLiquido / d.saldoLiquido) * 100;
     const percentualInvestido = 100 - percentualLucro;
 

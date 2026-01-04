@@ -11,11 +11,11 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  background: white;
+  background: #ffffff;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
+  max-width: 400px;
   margin: auto;
 }
 
@@ -27,6 +27,9 @@ h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
   z-index: 1;
+}
+h1 strong {
+  font-weight: 600;
 }
 
 .container h1 {
@@ -42,7 +45,7 @@ h1 {
   background-color: #ffee00;
   border-radius: 5px;
   z-index: -1;
-  left: -22px;
+  left: -20px;
   top: 26%;
   transform: translateY(-50%);
 }
@@ -50,7 +53,7 @@ h1 {
 .container h1 span {
   position: relative;
   display: inline-block;
-  color: white;
+  color: #ffffff;
   font-weight: bold;
   padding: 0 6px;
 }
@@ -60,7 +63,7 @@ h1 {
   position: absolute;
   width: 102%;
   height: 75%;
-  background-color: #0a6e34;
+  background-color: #056d39;
   border-radius: 5px;
   z-index: -1;
   top: 10%;
@@ -81,6 +84,16 @@ p {
 }
 
 /* --- Inputs e Botões --- */
+.container-inputs {
+  display: flex;
+  flex-direction: column;
+}
+
+.container-inputs div {
+  display: flex;
+  gap: 10px;
+}
+
 label {
   display: block;
   font-size: .9rem;
@@ -98,7 +111,7 @@ button {
   margin-top: 20px;
   padding: 10px;
   background-color: #0f69df;
-  color: white;
+  color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
   border: none;
@@ -129,7 +142,7 @@ button:hover {
   gap: 16px;
   max-width: 800px;
   margin: 20px auto;
-  padding: 0 16px;
+  padding: 0;
 }
 
 .resultado {
@@ -165,7 +178,7 @@ button:hover {
 }
 
 .parte-lucro {
-  background-color: #0a6e34;
+  background-color: #056d39;
 }
 
 .legenda-barra {
@@ -182,7 +195,7 @@ button:hover {
 }
 
 .legenda-barra span:nth-child(2) {
-  color: #0a6e34;
+  color: #056d39;
   font-weight: 600;
 }
 
@@ -204,9 +217,9 @@ button:hover {
   border-top: 1px solid #ddd;
 }
 
-.lucro-valor { color: #0a6e34; }
+.lucro-valor { color: #056d39; }
 .ir-valor { color: #d32f2f; }
-.liquido-final { color: #bd8c12; font-weight: bold; }
+.liquido-final { font-size: 1.25rem ;color: #bd8c12; }
 
 /* --- Dica Informativa --- */
 .dica-performance {
@@ -223,7 +236,7 @@ button:hover {
   width: 100% !important;
   max-width: 600px;
   margin: 30px auto;
-  background: white;
+  background: #ffffff;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -231,6 +244,11 @@ button:hover {
 
 /* --- Responsividade --- */
 @media (max-width: 480px) {
+  .container h1::before {
+    left: -18px;
+    top: 28%;
+  }
+
   .resultado h3 {
     font-size: 1rem;
   }
