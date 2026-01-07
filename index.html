@@ -11,6 +11,12 @@
   <div class="container">
     <h1><strong>In</strong>vest<span>CDB</span></h1>
     <p>Veja como juros compostos fazem seu dinheiro crescer.</p>
+    
+    <div class="container-dataInicio">
+      <label for="dataInicio">Data de Início (Opcional):</label>
+      <input type="date" id="dataInicio">
+    </div>
+
     <div class="container-inputs">
 
       <label>Aporte inicial (R$)</label>
@@ -19,17 +25,23 @@
       <label>Aporte mensal (R$)</label>
       <input type="text" id="aporteMensal" placeholder="Ex: 500,00">
 
-      <label>Rendimento</label>
+      <label>Rendimento %</label>
       <div>
         <input type="text" id="taxa" placeholder="Ex: 12 ou 1,5">
         <select id="tipoTaxa">
-          <option value="anual">Anual (%)</option>
-          <option value="mensal">Mensal (%)</option>
+          <option value="anual">Anual</option>
+          <option value="mensal">Mensal</option>
         </select>
       </div>
 
-      <label>Tempo de investimento (anos)</label>
-      <input type="number" id="anos" placeholder="Ex: 10">
+      <label>Tempo de investimento</label>
+      <div>
+        <input type="number" id="anos" placeholder="Ex: 10">
+        <select id="tipoMesAno">
+          <option value="anual">Anos</option>
+          <option value="mensal">Meses</option>
+        </select>
+      </div>
 
       <button id="calcular">Calcular</button>
     </div>

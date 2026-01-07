@@ -2,16 +2,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const elements = {
     calcular: document.getElementById("calcular"),
+    dataInicio: document.getElementById("dataInicio"),
     inputInicial: document.getElementById("aporteInicial"),
     inputMensal: document.getElementById("aporteMensal"),
     inputTaxa: document.getElementById("taxa"),
     tipoTaxa: document.getElementById("tipoTaxa"),
     inputAnos: document.getElementById("anos"),
+    tipoPeriodo: document.getElementById("tipoMesAno"),
     resultado: document.getElementById("resultado"),
     avisoIr: document.getElementById("avisoIr")
   };
 
   let grafico = null;
+
+  function obterFeriados(ano) {
+    return [
+      `${ano}-01-01`, `${ano}-04-21`, `${ano}-05-01`, `${ano}-09-07`, 
+      `${ano}-10-12`, `${ano}-11-02`, `${ano}-11-15`, `${ano}-11-20`, `${ano}-12-25`
+    ];
+  }
+
+  function ehDiaUtil(data, feriados) {
+    const diaSemana = data.getDay();
+    if (diaSemana === 0 || diaSemana === 6) return false;
+    const stringData = data.toISOString().split('T')[0];
+    return !feriados.includes(stringData);
+  }
 
   const formatarMoeda = (valor) => 
     valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -38,77 +54,84 @@ document.addEventListener('DOMContentLoaded', () => {
       return 0.15;
     },
 
-    investimento(aporteInicial, aporteMensal, taxaMensal, meses) {
-      let saldo = aporteInicial;
-      let totalInvestido = aporteInicial;
-
-      for (let i = 0; i < meses; i++) {
-        saldo += aporteMensal;
-        totalInvestido += aporteMensal;
-        saldo *= (1 + taxaMensal);
-      }
-      return { saldo, totalInvestido };
+    obterTaxaDiaria(taxaDigitada, tipo) {
+      let taxaAnual = tipo === "anual" 
+        ? taxaDigitada / 100 
+        : Math.pow(1 + (taxaDigitada / 100), 12) - 1;
+      return Math.pow(1 + taxaAnual, 1 / 252) - 1;
     },
 
-    converterTaxaMensal(taxaDigitada, tipo) {
-      const taxaDecimal = taxaDigitada / 100;
-      return tipo === "anual" 
-        ? Math.pow(1 + taxaDecimal, 1 / 12) - 1 
-        : taxaDecimal;
+    simular(aporteInicial, aporteMensal, taxaDiaria, totalPeriodos, eMensal, dataPartida) {
+      let saldo = aporteInicial;
+      let totalInvestido = aporteInicial;
+      let dataCronometro = new Date(dataPartida);
+      let feriados = obterFeriados(dataCronometro.getFullYear());
+      let resultados = [];
+
+      for (let p = 1; p <= totalPeriodos; p++) {
+        saldo += aporteMensal;
+        totalInvestido += aporteMensal;
+
+        const objetivo = new Date(dataCronometro);
+        if (eMensal) {
+          objetivo.setMonth(objetivo.getMonth() + 1);
+        } else {
+          objetivo.setFullYear(objetivo.getFullYear() + 1);
+        }
+
+        while (dataCronometro < objetivo) {
+          const anoAtual = dataCronometro.getFullYear();
+
+          if (!feriados[0].startsWith(anoAtual)) {
+            feriados = obterFeriados(anoAtual);
+          }
+
+          if (ehDiaUtil(dataCronometro, feriados)) {
+            saldo *= (1 + taxaDiaria);
+          }
+          dataCronometro.setDate(dataCronometro.getDate() + 1);
+        }
+
+        resultados.push({
+          periodo: p,
+          mesesTotais: eMensal ? p : p * 12,
+          saldoBruto: saldo,
+          totalInvestido: totalInvestido
+        });
+      }
+      return resultados;
     }
   };
 
-  function renderizarCard(ano, d) {
-    const percentualLucro = (d.lucroLiquido / d.saldoLiquido) * 100;
+  function renderizarCard(periodo, d, sufixo) {
+    const lucroBruto = d.saldoBruto - d.totalInvestido;
+    const aliquota = calculos.aliquotaIR(d.mesesTotais);
+    const valorIR = lucroBruto * aliquota;
+    const lucroLiquido = lucroBruto - valorIR;
+    const saldoLiquido = d.saldoBruto - valorIR;
+
+    const percentualLucro = (lucroLiquido / saldoLiquido) * 100;
     const percentualInvestido = 100 - percentualLucro;
 
     return `
       <div class="resultado">
-        <h3>${ano} ano(s)</h3>
-        
+        <h3>${periodo} ${sufixo}(s)</h3>
         <div class="barra-container">
           <div class="barra-progresso">
             <div class="parte-investida" style="width: ${percentualInvestido}%"></div>
             <div class="parte-lucro" style="width: ${percentualLucro}%"></div>
           </div>
-          <div class="legenda-barra">
-            <span><small>●</small> Investido</span>
-            <span><small>●</small> Lucro</span>
-          </div>
         </div>
-
         <ul class="lista-resultado">
-          <li>
-            <span>Total investido:</span>
-            <strong>${formatarMoeda(d.totalInvestido)}</strong>
-          </li>
-          <li>
-            <span>Saldo bruto:</span>
-            <strong>${formatarMoeda(d.saldoBruto)}</strong>
-          </li>
+          <li><span>Total investido:</span> <strong>${formatarMoeda(d.totalInvestido)}</strong></li>
+          <li><span>Saldo bruto:</span> <strong>${formatarMoeda(d.saldoBruto)}</strong></li>
           <hr>
-          <li>
-            <span>Lucro bruto:</span>
-            <strong>${formatarMoeda(d.lucroBruto)}</strong>
-          </li>
+          <li><span>Lucro bruto:</span> <strong>${formatarMoeda(lucroBruto)}</strong></li>
           <hr>
-          <li class="ir-valor">
-            <span>IR (${(d.aliquota * 100).toFixed(1)}%):</span>
-            <strong>${formatarMoeda(d.valorIR)}</strong>
-          </li>
-          <li class="lucro-valor">
-            <span>Lucro líquido:</span>
-            <strong>${formatarMoeda(d.lucroLiquido)}</strong>
-          </li>
-          <li class="liquido-final">
-            <span>Valor final líquido:</span>
-            <strong>${formatarMoeda(d.saldoLiquido)}</strong>
-          </li>
+          <li class="ir-valor"><span>IR (${(aliquota * 100).toFixed(1)}%):</span> <strong>${formatarMoeda(valorIR)}</strong></li>
+          <li class="lucro-valor"><span>Lucro líquido:</span> <strong>${formatarMoeda(lucroLiquido)}</strong></li>
+          <li class="liquido-final"><span>Valor final líquido:</span> <strong>${formatarMoeda(saldoLiquido)}</strong></li>
         </ul>
-
-        <div class="dica-performance">
-          O lucro representa <strong>${percentualLucro.toFixed(1)}%</strong> do valor total.
-        </div>
       </div>
     `;
   }
@@ -144,52 +167,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const aporteInicial = converterParaNumero(elements.inputInicial.value);
     const aporteMensal = converterParaNumero(elements.inputMensal.value);
     const taxaDigitada = converterParaNumero(elements.inputTaxa.value);
-    const anosTotais = Number(elements.inputAnos.value);
+    const tempoDigitado = Number(elements.inputAnos.value);
+    const eMensal = elements.tipoPeriodo.value === "mensal";
 
-    if ((aporteInicial <= 0 && aporteMensal <= 0) || taxaDigitada <= 0 || anosTotais <= 0) {
+    if ((aporteInicial <= 0 && aporteMensal <= 0) || taxaDigitada <= 0 || tempoDigitado <= 0) {
       elements.resultado.innerHTML = "<p>Preencha os valores corretamente.</p>";
       return;
     }
 
-    const taxaMensal = calculos.converterTaxaMensal(taxaDigitada, elements.tipoTaxa.value);
+    const dataInicio = elements.dataInicio?.value 
+      ? new Date(elements.dataInicio.value + 'T00:00:00') 
+      : new Date();
 
-    avisoIr.style.display = "block";
-    avisoIr.innerHTML = `
+    const taxaDiaria = calculos.obterTaxaDiaria(taxaDigitada, elements.tipoTaxa.value);
+    const simulacao = calculos.simular(aporteInicial, aporteMensal, taxaDiaria, tempoDigitado, eMensal, dataInicio);
+
+    elements.resultado.innerHTML = "";
+    elements.avisoIr.style.display = "block";
+    elements.avisoIr.innerHTML = `
       ⚠️ Os valores simulados incluem IR de acordo com o prazo:<br>
       - Até 180 dias: 22,5%<br>
       - 181 a 360 dias: 20%<br>
       - 361 a 720 dias: 17,5%<br>
       - Acima de 720 dias: 15%
     `;
-    
-    elements.resultado.innerHTML = "";
-    elements.avisoIr.style.display = "block";
 
     const labels = [];
     const dadosGrafico = [];
+    const sufixo = eMensal ? "mês" : "ano";
 
-    for (let ano = 1; ano <= anosTotais; ano++) {
-      const meses = ano * 12;
-      const res = calculos.investimento(aporteInicial, aporteMensal, taxaMensal, meses);
-      
-      const lucroBruto = res.saldo - res.totalInvestido;
-      const aliquota = calculos.aliquotaIR(meses);
-      const valorIR = lucroBruto * aliquota;
+    simulacao.forEach(res => {
+      const lucroBruto = res.saldoBruto - res.totalInvestido;
+      const valorIR = lucroBruto * calculos.aliquotaIR(res.mesesTotais);
+      const saldoLiquido = res.saldoBruto - valorIR;
 
-      const dadosView = {
-        ...res,
-        saldoBruto: res.saldo,
-        lucroBruto,
-        aliquota,
-        valorIR,
-        lucroLiquido: lucroBruto - valorIR,
-        saldoLiquido: res.saldo - valorIR
-      };
-
-      labels.push(`${ano} ano(s)`);
-      dadosGrafico.push(dadosView.saldoLiquido);
-      elements.resultado.innerHTML += renderizarCard(ano, dadosView);
-    }
+      labels.push(`${res.periodo} ${sufixo}(s)`);
+      dadosGrafico.push(saldoLiquido);
+      elements.resultado.innerHTML += renderizarCard(res.periodo, res, sufixo);
+    });
 
     atualizarGrafico(labels, dadosGrafico);
     elements.resultado.scrollIntoView({ behavior: 'smooth' });

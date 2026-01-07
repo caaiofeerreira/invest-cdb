@@ -84,6 +84,16 @@ p {
 }
 
 /* --- Inputs e Botões --- */
+
+.container-dataInicio {
+  display: flex;
+  flex-direction: column;
+}
+
+#dataInicio {
+  background-color: white;
+}
+
 .container-inputs {
   display: flex;
   flex-direction: column;
