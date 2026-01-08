@@ -20,54 +20,12 @@ body {
 }
 
 /* --- Títulos Estilizados --- */
-h1 {
-  font-family: 'Poppins', Arial, sans-serif;
-  font-weight: 300;
+.logo-investcdb {
+  width: 80%;
+  max-width: 250px;
+  height: auto;
   align-self: center;
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  z-index: 1;
-}
-h1 strong {
-  font-weight: 600;
-}
-
-.container h1 {
-  position: relative;
-  display: inline-block;
-}
-
-.container h1::before {
-  content: '';
-  position: absolute;
-  width: 55px;
-  height: 60px;
-  background-color: #ffee00;
-  border-radius: 5px;
-  z-index: -1;
-  left: -20px;
-  top: 26%;
-  transform: translateY(-50%);
-}
-
-.container h1 span {
-  position: relative;
-  display: inline-block;
-  color: #ffffff;
-  font-weight: bold;
-  padding: 0 6px;
-}
-
-.container h1 span::before {
-  content: '';
-  position: absolute;
-  width: 102%;
-  height: 75%;
-  background-color: #056d39;
-  border-radius: 5px;
-  z-index: -1;
-  top: 10%;
-  left: 0%;
+  padding-bottom: 10px;
 }
 
 h3 {
