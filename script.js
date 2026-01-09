@@ -121,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="parte-investida" style="width: ${percentualInvestido}%"></div>
             <div class="parte-lucro" style="width: ${percentualLucro}%"></div>
           </div>
+          <div class="legenda-barra">
+            <span><small>●</small> Investido</span>
+            <span><small>●</small> Lucro</span>
+          </div>
         </div>
         <ul class="lista-resultado">
           <li><span>Total investido:</span> <strong>${formatarMoeda(d.totalInvestido)}</strong></li>
@@ -132,6 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <li class="lucro-valor"><span>Lucro líquido:</span> <strong>${formatarMoeda(lucroLiquido)}</strong></li>
           <li class="liquido-final"><span>Valor final líquido:</span> <strong>${formatarMoeda(saldoLiquido)}</strong></li>
         </ul>
+        <div class="dica-performance">
+          O lucro representa <strong>${percentualLucro.toFixed(2)}%</strong> do valor total.
+        </div>
       </div>
     `;
   }
