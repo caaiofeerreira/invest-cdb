@@ -68,16 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
       let feriados = obterFeriados(dataCronometro.getFullYear());
       let resultados = [];
 
-      for (let p = 1; p <= totalPeriodos; p++) {
+      const totalMeses = eMensal ? totalPeriodos : totalPeriodos * 12;
+
+      for (let m = 1; m <= totalMeses; m++) {
         saldo += aporteMensal;
         totalInvestido += aporteMensal;
 
         const objetivo = new Date(dataCronometro);
-        if (eMensal) {
-          objetivo.setMonth(objetivo.getMonth() + 1);
-        } else {
-          objetivo.setFullYear(objetivo.getFullYear() + 1);
-        }
+        objetivo.setMonth(objetivo.getMonth() + 1);
 
         while (dataCronometro < objetivo) {
           const anoAtual = dataCronometro.getFullYear();
@@ -92,12 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
           dataCronometro.setDate(dataCronometro.getDate() + 1);
         }
 
-        resultados.push({
-          periodo: p,
-          mesesTotais: eMensal ? p : p * 12,
-          saldoBruto: saldo,
-          totalInvestido: totalInvestido
-        });
+        const deveRenderizar = eMensal || (m % 12 === 0);
+
+        if (deveRenderizar) {
+          const periodoExibicao = eMensal ? m : m / 12;
+          resultados.push({
+            periodo: periodoExibicao,
+            mesesTotais: m,
+            saldoBruto: saldo,
+            totalInvestido: totalInvestido
+          });
+        }
       }
       return resultados;
     }
