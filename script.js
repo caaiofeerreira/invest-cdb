@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     avisoIr: document.getElementById("avisoIr")
   };
 
+  if (elements.dataInicio) {
+    const hoje = new Date();
+    const offset = hoje.getTimezoneOffset();
+    const dataLocal = new Date(hoje.getTime() - (offset * 60 * 1000));
+    elements.dataInicio.value = dataLocal.toISOString().split('T')[0];
+  }
+
   let grafico = null;
 
   function obterFeriados(ano) {
